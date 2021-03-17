@@ -1,0 +1,28 @@
+body{
+    background: linear-gradient(rgb(21, 255, 185),rgb(15, 180, 131));
+}
+
+#status,#start,#status_of_model{
+    font-size: 18px;
+}
+
+.heading{
+    width: 100%;
+    font-size: 23px;
+    margin: 0;
+}
+
+.copy_right_footer{
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    line-height: 3;
+    text-align: center;
+}
+
+canvas{
+    border: 2px solid white;
+    border-radius: 10px;
+    box-shadow: 1px 1px 18px white;
+    margin-top: 97px;
+}

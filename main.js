@@ -1,5 +1,6 @@
 status = "";
 objects = [];
+object_search = "";
 
 function setup() {
     canvas = createCanvas(400,325);
@@ -8,45 +9,63 @@ function setup() {
     video.hide();
 }
 
-function start() {
-    objectDetector = ml5.objectDetector('cocossd',modelLoaded);
-    document.getElementById("status").innerHTML = "Status: Detecting Object";
-    object_search = document.getElementById("object").value;
-}
-
 function modelLoaded() {
     console.log("Model Loaded!");
     status = true;
 }
 
-function gotResult(results , error) {
-    if(error){
+function gotResult(error,results) {
+    if (error) {
         console.error(error);
     }
     console.log(results);
-    results = objects;
+    objects = results;
 }
 
 function draw() 
 {
     image(video,0,0,400,325);
-
+    r = random(255);
+    g = random(255);
+    b = random(255);
     if (status != "") 
     {
         objectDetector.detect(video,gotResult);
-
         for (i = 0; i < objects.length; i++) {
-            if (objects[i].label == object_search) {
+            percentage = floor(objects[i].confidence * 100);
+            x = objects[i].x;
+            y = objects[i].y;
+            width = objects[i].width;
+            height = objects[i].height;            
+            label = objects[i].label;
+            if (label == object_search) {
+                video.stop();
+                objectDetector.detect(gotResult);
                 var synth = window.speechSynthesis;
-                speak_data = objects[i].label + " Found";
+                speak_data = objects[i].label + " found";
                 var utterThis = new SpeechSynthesisUtterance(speak_data);
                 synth.speak(utterThis);
                 document.getElementById("status_of_model").innerHTML = "Model Has Detected Object";
                 document.getElementById("status").innerHTML = "Status : " + objects[i].label + " Found";
-                percentage = floor(objects[i].confidence * 100);
-                text(objects[i].label + " " + percentage + "%" , objects[i].x + 15 , objects[i].y + 15);
-                rect(objects[i].x , objects[i].y , objects[i].width , objects[i].height);
+                fill(r,g,b);
+                text(label + " " + percentage + "%" , x + 15 , y + 15);
+                noFill();
+                stroke(r,g,b);
+                rect(x , y , width , height);
+            }else{
+                document.getElementById("status_of_model").innerHTML = "Model Has Not Detected Object";
+                document.getElementById("status").innerHTML = "Status : " + objects[i].label + " Not Found";
+                var synth = window.speechSynthesis;
+                speak_data = objects[i].label + " not found";
+                var utterThis = new SpeechSynthesisUtterance(speak_data);
+                synth.speak(utterThis);
             }
         }
     }
+}
+
+function start() {
+    objectDetector = ml5.objectDetector('cocossd',modelLoaded);
+    document.getElementById("status").innerHTML = "Status: Detecting Object";
+    object_search = document.getElementById("object").value;
 }
